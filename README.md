@@ -39,7 +39,11 @@ to red to white. Useful for plotting angles.
 Some scripts require m files available from the Matlab
 file repository. See comments of each script for more information.
 
+## Matlab Version
 
+This software was tested on Matlab version R2019b, though other recent versions should work. 
+Note that versions earlier than 2014b will **not** work, because graphics functions changed
+significantly in that version.
 
 
 

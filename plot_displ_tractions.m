@@ -39,13 +39,13 @@ invisible = [];
 % Name of multipage tif file to plot cells. 
 %   Set to [] if 'c2' is in the name
 %   Set to 'none' if there is no cell image
-cellname = 'none';
+cellname = 'c2_island01.tif';
 % Name of mat file with displacements and tractions
-filename = 'displ_tractions.mat';
+filename = 'tract_results.mat';
 % Name of domain. This is where cells are located. Set to [] if no domain
 domainname = [];
 % Header of name to save plots.
-dirname = 'displ_traction_plots'; % Name of a folder to put plots in
+dirname = 'displ_traction'; % Name of a folder to put plots in
 savenameheader = [dirname,'/t_']; % Header of file name to save
 % savenameheader = 'displ_traction_'; % Other options are commented
 % curdir = pwd;
@@ -54,7 +54,7 @@ savenameheader = [dirname,'/t_']; % Header of file name to save
 % Max value of displ and traction (used for color plot limits)
 umax = 1;     % um
 tmax = 100;      % Pa
-% Number of images to compute tractions. Set to empty arry [] to compute all tractions
+% Number of images to plot. Set to empty arry [] to plot all images
 num_images = [];
 
 %% --- LOAD DATA ---

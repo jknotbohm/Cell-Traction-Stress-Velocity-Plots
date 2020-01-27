@@ -50,8 +50,6 @@ savenameheader = [dirname,'/t_'];
 % entire image (ie, domain==1 everywhere).
 % domainname = 'domain.tif';
 domainname = [];
-% Name of mat file with displacements and tractions
-ut_filename = 'displ_tractions.mat';
 % Name of mat file with stresses
 s_filename = 'stresses.mat';
 % Approx max stress - used for contour limits
@@ -74,7 +72,7 @@ end
 
 % Load data
 load(s_filename);
-load(ut_filename,'x','y','d0'); % Load displacements and tractions to get x and y coordinates and subset spacing
+% load(ut_filename,'x','y','d0'); % Load displacements and tractions to get x and y coordinates and subset spacing
 
 % Get pixel size
 fid = fopen('ExperimentalSettings.txt');
@@ -205,7 +203,7 @@ for k=1:K
     subplot(2,4,6)
     h1 = pcolor(x,y,S_mean);
     set(h1,'linestyle','none');
-    caxis([-smax smax]); colormap(cmap); hc = colorbar;
+    caxis([-smax smax]); colormap(gca,cmap); hc = colorbar;
     axis xy; axis equal; axis tight; set(gca,'box','off');
     xlabel('\mum'); ylabel('\mum');
     title('Tension, (\sigma_1+\sigma_2)/2')
@@ -223,7 +221,7 @@ for k=1:K
 %     subplot(2,4,8)
 %     h1 = pcolor(x,y,S_xymax./S_mean);
 %     set(h1,'linestyle','none');
-%     colormap(gca,'jet');
+%     colormap(gca,'parula');
 %     caxis([0 1]); hc = colorbar;
 %     axis xy; axis equal; axis tight; set(gca,'box','off');
 %     xlabel('\mum'); ylabel('\mum');

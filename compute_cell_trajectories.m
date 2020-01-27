@@ -35,29 +35,31 @@ clc;
 % Name of displacment data to load. Required variables in the mat file:
 %   x, y: 2D arrays of grid points corresponding to the center of each
 %         subset
-%   u, v: 3D arrays of displacements at each grid point over time.
-DICname = 'DIC_results.mat';
+%   u, v: 3D arrays of cell displacement at each grid point over time.
+DICname = 'FIDICc2.mat';
 % Name of file containing phase contrast images used for correlation. Use a
 % multipage tif format to save multiple images over time as one file. 
 % Use * for wild, and the code will open the first image matching the given 
 % format
-cellname = 'pos*c1.tif';
+cellname = 'c1*.tif';
 % It is common for the resolution of the image correlation to be finer than
 % the cell size. The trajectories should correlate to a cell, so downsample
 % the data to match the number of grid points to the number of cells. Use a
 % value of 1 to avoid downsampling. Must be positive integer.
 fd = 2;
 % Name of multipage tif file with domains. Use [] if domain is entire image
-domainname = [];
+domainname = 'domain.tif';
 % State whether geometry is an island. Set this to 1 if yes. For island
 % geometry, code will set origin to be the center of the island
-isisland = 0;
+isisland = 1;
 % Optional: choose starting and ending time points for analysis. Enter
 % empty array [] to begin at first time point and/or end at last time point
-tstart = [];
+tstart = 11;
 tend = [];
-% Name to save data
+% Name to save mat file of data
 savename = 'cell_trajectories.mat';
+% Name to save plot of trajectories
+plotname = 'Trajectories';
 
 
 %% --- GET TRAJECTORIES ---
@@ -98,8 +100,8 @@ end
 % First crop off edges so that domain matches start and end points of x
 % and y.
 domain1 = domain1(min(y(:)):max(y(:)), min(x(:)):max(x(:))); % Match starting row and col to y and x
-domain1 = downsample(domain1,d0*fd); % downsample number of rows
-domain1 = downsample(domain1',d0*fd)'; % downsample number of cols
+domain1 = downsample(domain1,d0); % downsample number of rows
+domain1 = downsample(domain1',d0)'; % downsample number of cols
 
 % If geometry is island, shift origin so it's at center of domain
 if isisland == 1
@@ -119,7 +121,6 @@ end
 % Get initial grid points for trajectory computation
 x_cell2=downsample(x_cell,fd); x_cell2=downsample(x_cell2',fd)';
 y_cell2=downsample(y_cell,fd); y_cell2=downsample(y_cell2',fd)';
-
 
 
 % Get domain for first time point
@@ -142,7 +143,7 @@ if isisland == 1
     
 % For edge geometry, just use the given domain    
 else
-    IDX = logical(domain1);
+    IDX = logical(domain1d);
 end
 
 
@@ -183,10 +184,10 @@ for k= tstart:tend
         % number, and the correlation is between the k-th and (k+1)-th
         % images if tstart==1 or the (k-1)-th and k-th images if tstart==2.
         % Here, I'm choosing the starting image as k-tstart+1
-%         domain = imread(domainname, k-tstart+1);
+        domain = imread(domainname, k-tstart+1);
         
-        % Uncomment this and comment above if domain is only for first time point
-        domain = imread(domainname);
+%         % Uncomment this and comment above if domain is only for first time point
+%         domain = imread(domainname);
         
         domain = double(domain);
         domain = domain/max(domain(:));
@@ -218,26 +219,26 @@ for k= tstart:tend
     
     % --- Correct for drift. Choose one of various options ---
     
-    % Correct for drift by subtracting off mean displacement of the slowest
-    % third of the cells
-    idx = ~isnan(u_cell_k) & ~isnan(v_cell_k);
-    u_tmp = u_cell_k(idx);
-    v_tmp = v_cell_k(idx);
-    umag_tmp = sqrt(u_tmp.^2+v_tmp.^2);
-    umag30 = prctile(umag_tmp,30);
-    idx = umag_tmp < umag30;
-    uave = mean( u_tmp(idx) );
-    vave = mean( v_tmp(idx) );
+%     % Correct for drift by subtracting off mean displacement of the slowest
+%     % third of the cells
+%     idx = ~isnan(u_cell_k) & ~isnan(v_cell_k);
+%     u_tmp = u_cell_k(idx);
+%     v_tmp = v_cell_k(idx);
+%     umag_tmp = sqrt(u_tmp.^2+v_tmp.^2);
+%     umag30 = prctile(umag_tmp,30);
+%     idx = umag_tmp < umag30;
+%     uave = mean( u_tmp(idx) );
+%     vave = mean( v_tmp(idx) );
     
 %     % Correct for drift by subtracting off medians
 %     uave = nanmedian(u_cell_k(:));
 %     vave = nanmedian(v_cell_k(:));
     
-%     % Correct for drift using domain
-%     SE = strel('disk',5,0);
-%     domain_dilate = imdilate(domain,SE);
-%     uave = nanmean(u_cell_k(~domain_dilate));
-%     vave = nanmean(v_cell_k(~domain_dilate));
+    % Correct for drift using domain
+    SE = strel('disk',5,0);
+    domain_dilate = imdilate(domain,SE);
+    uave = nanmean(u_cell_k(~domain_dilate));
+    vave = nanmean(v_cell_k(~domain_dilate));
     
     u_cell_k = u_cell_k-uave;
     v_cell_k = v_cell_k-vave;
@@ -292,9 +293,11 @@ set(gca,'box','on','fontsize',11);
 % set(gca,'xtick',[-500:250:500],'ytick',[-500:250:500]);
 
 set(hf,'Paperpositionmode','auto');
-print('-dpng','-r300','Trajectories');
+print('-dpng','-r300',plotname);
+
+% Save in different directory
 % curdir = pwd;
-% print('-dpng','-r300',['../Trajectories_t16-end/',curdir(end-4:end)]);
+% print('-dpng','-r300',['../Trajectories/',curdir(end-4:end)]);
 
 
 
