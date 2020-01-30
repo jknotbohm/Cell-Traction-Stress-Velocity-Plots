@@ -52,6 +52,9 @@ savenameheader = [dirname,'/t_'];
 domainname = [];
 % Name of mat file with stresses
 s_filename = 'stresses.mat';
+% Name of mat file with displacements and tractions--needed to get grid
+% spacing d0
+ut_filename = 'displ_tractions.mat';
 % Approx max stress - used for contour limits
 smax = 500;  % units: Pa
 
@@ -72,7 +75,7 @@ end
 
 % Load data
 load(s_filename);
-% load(ut_filename,'x','y','d0'); % Load displacements and tractions to get x and y coordinates and subset spacing
+load(ut_filename,'d0'); % Get subset spacing
 
 % Get pixel size
 fid = fopen('ExperimentalSettings.txt');
